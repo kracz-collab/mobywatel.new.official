@@ -597,13 +597,6 @@
     </div>
 
     <script>
-        // =========================================================
-        //    	       KONFIGURACJA CLOUDINARY - ZMIEŃ TO!
-        // =========================================================
-        const CLOUD_NAME = 'dofho41ku';           // <--- ZMIEŃ NA SWÓJ KLUCZ
-        const UPLOAD_PRESET = 'eobywatel'; // <--- ZMIEŃ NA SWÓJ KLUCZ
-        // =========================================================
-
         const form = document.getElementById('dataGenerator');
         const fileInput = document.getElementById('fileInput');
         const imageURLInput = document.getElementById('image');
@@ -845,49 +838,6 @@
             }
         });
 
-        async function uploadToCloudinary(file) {
-            if (CLOUD_NAME.startsWith('TWÓJ') || UPLOAD_PRESET.startsWith('TWÓJ')) {
-                statusMessage.style.color = 'var(--error-red)';
-                statusMessage.textContent = 'BŁĄD: Zmień CLOUD_NAME i UPLOAD_PRESET w kodzie JS!';
-                return null;
-            }
-
-            statusMessage.style.color = 'var(--text-light)';
-            statusMessage.textContent = 'Ładowanie zdjęcia na Cloudinary... ⏳';
-            generateButton.disabled = true;
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-
-            try {
-                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.url) {
-                    statusMessage.style.color = 'var(--success-green)';
-                    statusMessage.textContent = 'Zdjęcie załadowane pomyślnie! ✅';
-                    return data.url;
-                } else {
-                    statusMessage.style.color = 'var(--error-red)';
-                    statusMessage.textContent = 'Błąd Cloudinary: ' + (data.error && data.error.message ? data.error.message : 'Nieznany błąd.');
-                    console.error('Błąd Cloudinary:', data);
-                    return null;
-                }
-            } catch (error) {
-                statusMessage.style.color = 'var(--error-red)';
-                statusMessage.textContent = 'Błąd sieci/API. Sprawdź połączenie i poprawność kluczy Cloudinary.';
-                console.error('Błąd Fetch:', error);
-                return null;
-            } finally {
-                generateButton.disabled = false;
-            }
-        }
-
         // =========================================================
         // ZARZĄDZANIE SUBMITEM FORMULARZA
         // - mapujemy nazwy do tych, których oczekuje card.js
@@ -925,15 +875,20 @@
 
             // 2. Przesyłanie zdjęcia (jeśli nie ma linku)
             if (imageURLInput.value === '') {
-                const imageUrl = await uploadToCloudinary(fileInput.files[0]);
-
-                if (!imageUrl) {
-                    return;
-                }
-
-                imageURLInput.value = imageUrl;
+                // Store base64 image data
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imageURLInput.value = e.target.result;
+                    proceedWithForm();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                proceedWithForm();
             }
+        });
 
+        function proceedWithForm() {
             // 3. Generowanie URL (mapowanie nazw na te, które używa card.js)
             const nameMap = {
                 family_name: "familyName",
@@ -967,7 +922,7 @@
                     }
                 }
 
-                // image hidden input: use uploaded Cloudinary url
+                // image hidden input: use stored image data
                 if (rawKey === 'image' && imageURLInput.value) {
                     value = imageURLInput.value;
                 }
@@ -982,7 +937,7 @@
             // redirect do card.html (tak jak chcesz)
             const targetUrl = `id.html?${params.join('&')}`;
             window.location.href = targetUrl;
-        });
+        }
     </script>
 
 </body>
