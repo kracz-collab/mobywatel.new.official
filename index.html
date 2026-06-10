@@ -9,19 +9,26 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         :root {
-            --bg-base: #0f172a;
-            --bg-accent: #1e293b;
+            /* Głębokie, fioletowe tła */
+            --bg-base: #090514;
+            --bg-accent: #130b24;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #8b5cf6;
-            --primary-hover: #7c3aed;
-            --primary-glow: rgba(139, 92, 246, 0.4);
-            --secondary: #3b82f6;
-            --secondary-hover: #2563eb;
-            --secondary-glow: rgba(59, 130, 246, 0.4);
+            --text-muted: #a78bfa;
+            
+            /* Kolor główny: Fiolet */
+            --primary: #a855f7;
+            --primary-hover: #9333ea;
+            --primary-glow: rgba(168, 85, 247, 0.4);
+            
+            /* Kolor akcentu: Magenta / Róż */
+            --secondary: #ec4899;
+            --secondary-hover: #db2777;
+            --secondary-glow: rgba(236, 72, 153, 0.4);
+            
+            /* Wykończenie interfejsu */
             --border-color: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --input-bg: rgba(15, 23, 42, 0.6);
+            --glass-bg: rgba(19, 11, 36, 0.7);
+            --input-bg: rgba(9, 5, 20, 0.6);
             --error-red: #ef4444;
             --success-green: #10b981;
         }
@@ -41,8 +48,9 @@
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
-            background-image: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15), transparent 25%);
+            /* Subtelne fioletowo-różowe poświaty w tle */
+            background-image: radial-gradient(circle at 15% 50%, rgba(168, 85, 247, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
             background-attachment: fixed;
         }
 
@@ -55,8 +63,22 @@
             border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    <div class="container">
+        </div>
         }
 
         @keyframes slideUp {
