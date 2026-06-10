@@ -1,87 +1,361 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="manifest"
-        href="data:application/manifest+json;base64,eyJuYW1lIjoiIiwic2hvcnRfbmFtZSI6IiIsInRoZW1lX2NvbG9yIjoiIzEwMTMxNyIsImJhY2tncm91bmRfY29sb3IiOiIjMTAxMzE3IiwiZGlzcGxheSI6InN0YW5kYWxvbmUifQ==">
-    <title>mObywatel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mObywatel - Weryfikacja</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <link rel="stylesheet" href="./qr_files/qr.css?v=3">
-    <link rel="stylesheet" href="assetsdiff/main.css">
-    <link rel="icon" type="image/x-icon" href="https://i.imgur.com/U7TRg0V.png">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/U7TRg0V.png">
-    <link rel="shortcut icon" href="https://i.imgur.com/U7TRg0V.png">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
+        :root {
+            --bg-black: #000000;
+            --bg-dark: #0a0a0c;
+            --primary-blue: #0084ff;
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --success-green: #30d158;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Nagłówek aplikacji */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid #1c1c1e;
+        }
+
+        .back-btn {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        /* Ekran Główny z Kodem QR */
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Kontener Kodu QR z narożnikami */
+        .qr-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            background-color: #1c1c1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        /* Przykładowy wygenerowany kod QR (można podmienić na bibliotekę JS) */
+        .qr-code-placeholder {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(45deg, #fff 25%, #000 25%, #000 50%, #fff 50%, #fff 75%, #000 75%, #000);
+            background-size: 20px 20px;
+            border-radius: 8px;
+        }
+
+        /* Niebieskie narożniki */
+        .corner {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border: 4px solid var(--primary-blue);
+            pointer-events: none;
+        }
+
+        .top-left {
+            top: -10px;
+            left: -10px;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 12px;
+        }
+
+        .top-right {
+            top: -10px;
+            right: -10px;
+            border-left: none;
+            border-bottom: none;
+            border-top-right-radius: 12px;
+        }
+
+        .bottom-left {
+            bottom: -10px;
+            left: -10px;
+            border-right: none;
+            border-top: none;
+            border-bottom-left-radius: 12px;
+        }
+
+        .bottom-right {
+            bottom: -10px;
+            right: -10px;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Sekcja licznika */
+        .timer-section {
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .timer-text {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .timer-countdown {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* Pasek Postępu */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: #1c1c1e;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--primary-blue);
+            border-radius: 3px;
+            transition: width 1s linear;
+        }
+
+        /* Ekran Sukcesu Weryfikacji */
+        .success-card {
+            background-color: #1c1c1e;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 340px;
+            border: 1px solid rgba(48, 209, 88, 0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(48, 209, 88, 0.1);
+            border: 3px solid var(--success-green);
+            color: var(--success-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 24px auto;
+            font-weight: bold;
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .success-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Dolna nawigacja a'la mObywatel */
+        .bottom-nav {
+            background-color: var(--bg-dark);
+            border-top: 1px solid #1c1c1e;
+            padding: 12px 20px 25px 20px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .nav-item {
+            opacity: 0.6;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+            opacity: 1;
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
-
 <body>
 
-    <div class="bottom_bar">
-        <div class="bottom_bar_grid">
-            <div class="bottom_element_grid" send="home">
-                <div class="bottom_element_image home"></div>
-                <p class="bottom_element_text ">Dokumenty</p>
-            </div>
-            <div class="bottom_element_grid" send="services">
-                <div class="bottom_element_image services"></div>
-                <p class="bottom_element_text">Usługi</p>
-            </div>
-            <div class="bottom_element_grid" send="qr">
-                <div class="bottom_element_image qr_open qr"></div>
-                <p class="bottom_element_text open">Kod QR</p>
-            </div>
-            <div class="bottom_element_grid" send="more">
-                <div class="bottom_element_image more"></div>
-                <p class="bottom_element_text ">Więcej</p>
-            </div>
-        </div>
-    </div>
+    <header class="app-header">
+        <div class="back-btn" onclick="resetApp()">&lt; Kod QR</div>
+        <div class="header-title" id="page-title">Mój kod QR</div>
+        <div style="width: 50px;"></div> </header>
 
-    <div class="container">
-        <div class="page_top">
-            <img class="main_page_logo" src="./qr_files/logo_large.png">
+    <main id="qr-screen" class="screen">
+        <div class="qr-container" onclick="simulateVerification()">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+            
+            <div class="qr-code-placeholder" id="qr-image"></div>
         </div>
-        <p class="main_title">Kod QR</p>
-        <p class="description_qr">Dzięki tej funkcji zalogujesz się do usług w internecie i potwierdzisz cyfrowe
-            dokumenty - zarówno swoje, jak i drugiej osoby.</p>
-        <div class="action_grid">
-            <div class="action" style="border: none;" onclick="sendTo('scanqr')" role="button" tabindex="0">
-                <img class="action_image" src="./qr_files/confirm_gray.png">
-                <div class="action_text">
-                    <p class="action_title">Zeskanuj kod QR</p>
-                    <p class="action_subtitle" style="width: 100%;">Zaloguj się do strony internetowej lub potwierdź
-                        swój cyfrowy dokument.</p>
-                </div>
-                <img class="arrow" src="./qr_files/right_arrow_sharp.png">
-            </div>
-            <div class="action" onclick="sendTo('showqr')" role="button" tabindex="0">
-                <img class="action_image" src="./qr_files/check_gray.png">
-                <div class="action_text">
-                    <p class="action_title">Pokaż kod QR</p>
-                    <p class="action_subtitle" style="width: 90%;">Sprawdź cyfrowy dokument drugiej osoby.</p>
-                </div>
-                <img class="arrow" src="./qr_files/right_arrow_sharp.png">
-            </div>
-        </div>
-    </div>
 
-    <script src="assets/bar.js?v=3"></script>
-    <script src="assetsdiff/manifest.js.pobrane"></script>
+        <div class="timer-section" id="timer-box">
+            <p class="timer-text">Kod wygaśnie za:</p>
+            <div class="timer-countdown" id="countdown">03:00</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </main>
+
+    <main id="success-screen" class="screen hidden">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Zweryfikowano pomyślnie</h2>
+            <p class="success-desc">Tożsamość i ważność dokumentu zostały potwierdzone w systemie centralnym.</p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <div class="nav-icon">📇</div>
+            <div>Dokumenty</div>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">🔳</div>
+            <div>Kod QR</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">⚙️</div>
+            <div>Więcej</div>
+        </div>
+    </nav>
+
     <script>
-        document.querySelectorAll('.action[role="button"]').forEach(function(action) {
-            action.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    action.click();
+        const TOTAL_TIME = 180; // 3 minuty w sekundach
+        let timeLeft = TOTAL_TIME;
+        let timerInterval;
+
+        function startTimer() {
+            const countdownEl = document.getElementById('countdown');
+            const progressFillEl = document.getElementById('progress-fill');
+            const qrImage = document.getElementById('qr-image');
+            const timerBox = document.getElementById('timer-box');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+
+                // Kalkulacja minut i sekund
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                countdownEl.innerText = `${minutes}:${seconds}`;
+
+                // Aktualizacja paska postępu
+                let percentage = (timeLeft / TOTAL_TIME) * 100;
+                progressFillEl.style.width = `${percentage}%`;
+
+                // Koniec czasu
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    countdownEl.innerText = "WYGASŁ";
+                    countdownEl.style.color = "#ef4444";
+                    progressFillEl.style.backgroundColor = "#ef4444";
+                    qrImage.style.opacity = "0.1";
+                    qrImage.style.pointerEvents = "none";
                 }
-            });
-        });
+            }, 1000);
+        }
+
+        // Funkcja wywoływana po "zeskanowaniu" (kliknięciu w kod)
+        function simulateVerification() {
+            clearInterval(timerInterval);
+            document.getElementById('qr-screen').classList.add('hidden');
+            document.getElementById('success-screen').classList.remove('hidden');
+            document.getElementById('page-title').innerText = 'Status weryfikacji';
+        }
+
+        // Powrót do ekranu głównego / reset stanu
+        function resetApp() {
+            clearInterval(timerInterval);
+            timeLeft = TOTAL_TIME;
+            document.getElementById('countdown').innerText = "03:00";
+            document.getElementById('countdown').style.color = "var(--primary-blue)";
+            document.getElementById('progress-fill').style.width = "100%";
+            document.getElementById('progress-fill').style.backgroundColor = "var(--primary-blue)";
+            document.getElementById('qr-image').style.opacity = "1";
+            
+            document.getElementById('success-screen').classList.add('hidden');
+            document.getElementById('qr-screen').classList.remove('hidden');
+            document.getElementById('page-title').innerText = 'Mój kod QR';
+            startTimer();
+        }
+
+        // Inicjalizacja zegara przy starcie strony
+        window.onload = startTimer;
     </script>
 </body>
-
 </html>
