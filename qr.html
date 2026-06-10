@@ -59,7 +59,7 @@
             font-weight: 600;
         }
 
-        /* Ekran Główny z Kodem QR */
+        /* Ekrany aplikacji */
         .screen {
             flex: 1;
             display: flex;
@@ -79,31 +79,33 @@
             position: relative;
             width: 260px;
             height: 260px;
-            background-color: #1c1c1e;
+            background-color: #ffffff; /* Białe tło dla czytelności kodu QR */
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
         }
 
-        /* Przykładowy wygenerowany kod QR (można podmienić na bibliotekę JS) */
-        .qr-code-placeholder {
+        /* Obrazek kodu QR */
+        .qr-image-src {
             width: 220px;
             height: 220px;
-            background: linear-gradient(45deg, #fff 25%, #000 25%, #000 50%, #fff 50%, #fff 75%, #000 75%, #000);
-            background-size: 20px 20px;
-            border-radius: 8px;
+            object-fit: contain;
+            display: block;
+            transition: opacity 0.3s ease;
         }
 
-        /* Niebieskie narożniki */
+        /* Niebieskie narożniki wysunięte lekko na zewnątrz */
         .corner {
             position: absolute;
             width: 35px;
             height: 35px;
             border: 4px solid var(--primary-blue);
             pointer-events: none;
+            z-index: 10;
         }
 
         .top-left {
@@ -215,7 +217,7 @@
             line-height: 1.4;
         }
 
-        /* Dolna nawigacja a'la mObywatel */
+        /* Dolna nawigacja */
         .bottom-nav {
             background-color: var(--bg-dark);
             border-top: 1px solid #1c1c1e;
@@ -248,7 +250,8 @@
     <header class="app-header">
         <div class="back-btn" onclick="resetApp()">&lt; Kod QR</div>
         <div class="header-title" id="page-title">Mój kod QR</div>
-        <div style="width: 50px;"></div> </header>
+        <div style="width: 50px;"></div>
+    </header>
 
     <main id="qr-screen" class="screen">
         <div class="qr-container" onclick="simulateVerification()">
@@ -257,7 +260,7 @@
             <div class="corner bottom-left"></div>
             <div class="corner bottom-right"></div>
             
-            <div class="qr-code-placeholder" id="qr-image"></div>
+            <img src="obraz.png" alt="Kod QR" class="qr-image-src" id="qr-image">
         </div>
 
         <div class="timer-section" id="timer-box">
@@ -293,7 +296,7 @@
     </nav>
 
     <script>
-        const TOTAL_TIME = 180; // 3 minuty w sekundach
+        const TOTAL_TIME = 180; // 3 minuty
         let timeLeft = TOTAL_TIME;
         let timerInterval;
 
@@ -301,12 +304,10 @@
             const countdownEl = document.getElementById('countdown');
             const progressFillEl = document.getElementById('progress-fill');
             const qrImage = document.getElementById('qr-image');
-            const timerBox = document.getElementById('timer-box');
 
             timerInterval = setInterval(() => {
                 timeLeft--;
 
-                // Kalkulacja minut i sekund
                 let minutes = Math.floor(timeLeft / 60);
                 let seconds = timeLeft % 60;
                 minutes = minutes < 10 ? '0' + minutes : minutes;
@@ -314,23 +315,20 @@
 
                 countdownEl.innerText = `${minutes}:${seconds}`;
 
-                // Aktualizacja paska postępu
                 let percentage = (timeLeft / TOTAL_TIME) * 100;
                 progressFillEl.style.width = `${percentage}%`;
 
-                // Koniec czasu
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     countdownEl.innerText = "WYGASŁ";
                     countdownEl.style.color = "#ef4444";
                     progressFillEl.style.backgroundColor = "#ef4444";
                     qrImage.style.opacity = "0.1";
-                    qrImage.style.pointerEvents = "none";
+                    document.querySelector('.qr-container').style.pointerEvents = "none";
                 }
             }, 1000);
         }
 
-        // Funkcja wywoływana po "zeskanowaniu" (kliknięciu w kod)
         function simulateVerification() {
             clearInterval(timerInterval);
             document.getElementById('qr-screen').classList.add('hidden');
@@ -338,7 +336,6 @@
             document.getElementById('page-title').innerText = 'Status weryfikacji';
         }
 
-        // Powrót do ekranu głównego / reset stanu
         function resetApp() {
             clearInterval(timerInterval);
             timeLeft = TOTAL_TIME;
@@ -347,6 +344,7 @@
             document.getElementById('progress-fill').style.width = "100%";
             document.getElementById('progress-fill').style.backgroundColor = "var(--primary-blue)";
             document.getElementById('qr-image').style.opacity = "1";
+            document.querySelector('.qr-container').style.pointerEvents = "auto";
             
             document.getElementById('success-screen').classList.add('hidden');
             document.getElementById('qr-screen').classList.remove('hidden');
@@ -354,7 +352,6 @@
             startTimer();
         }
 
-        // Inicjalizacja zegara przy starcie strony
         window.onload = startTimer;
     </script>
 </body>
